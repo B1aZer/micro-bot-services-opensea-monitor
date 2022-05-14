@@ -16,10 +16,12 @@ const client = new OpenSeaStreamClient({
 let wsClient = null;
 const wss = new WebSocketServer({ port: 3080 });
 wss.on('connection', function connection(ws) {
+    console.log('client connected');
     wsClient = ws;
 });
 
 wss.on('close', function close() {
+    console.log('client disconnected');
     wsClient = null;
 });
 
