@@ -13,6 +13,7 @@ const client = new OpenSeaStreamClient({
         transport: WebSocket
     }
 });
+
 let wsClient = null;
 const wss = new WebSocketServer({ port: 3080 });
 wss.on('connection', function connection(ws) {
@@ -55,12 +56,21 @@ async function processQueue() {
         let item = queue.pop();
         console.log(`working on ${item.collection} from ${queue.length}`);
         try {
-            //TODO: might mix wo header
-            let res = await axios.get(`https://api.opensea.io/api/v1/collection/${item.collection}`, {
-                headers: {
-                    "X-API-KEY": 'b9ab6f08fe5e408fb9c61f1fb4dabf60'
-                }
-            })
+            let headers = [
+                {
+                    headers: {
+                        "X-API-KEY": "b9ab6f08fe5e408fb9c61f1fb4dabf60"
+                    }
+                },
+                {
+                    headers: {
+                        "X-API-KEY": "0f4cecba10aa45c49abdd314286d7c8a"
+                    }
+                },
+                {}
+            ]
+            let randomKey = headers[Math.floor(Math.random() * headers.length)];
+            let res = await axios.get(`https://api.opensea.io/api/v1/collection/${item.collection}`, randomKey)
             console.log(`sent request`);
             let base_price = ethers.BigNumber.from(item.eth_price)
             let floor_price = ethers.utils.parseEther(res.data.collection.stats.floor_price.toString())
@@ -72,15 +82,17 @@ async function processQueue() {
                 wsClient && wsClient.send(JSON.stringify(item));
             }
         } catch (err) {
-            queue.unshift(item);
-            console.error(`[ERROR]: pushing ${item.collection} back to queue`)
+            // TODO: circle if 2 in queue
+            //queue.unshift(item);
+            //console.error(`[ERROR]: pushing ${item.collection} back to queue`)
             console.log(`[ERROR]: error in request ${err.data}`);
         }
     }
-    //let randomRetry1and2s = (Math.random() + 1) * 1000
+    //let randomRetry1and2s = (Math.random() * (max - min + 1) + min) * 1000
+    let randomRetry1and4s = (Math.random() * (3 - 1 + 1) + 1) * 1000
     //let randomRetry5and6s = (Math.random() + 5) * 1000
-    let randomRetry1and10 = ((Math.random() * 10) + 1) * 1000
-    console.log(`retry in ${randomRetry1and10}`);
-    setTimeout(processQueue, randomRetry1and10);
+    //let randomRetry1and10 = ((Math.random() * 10) + 1) * 1000
+    console.log(`retry in ${randomRetry1and4s}`);
+    setTimeout(processQueue, randomRetry1and4s);
 }
 
