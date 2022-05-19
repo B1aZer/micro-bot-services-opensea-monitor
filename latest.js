@@ -23,6 +23,8 @@ async function init() {
         i += 300
         // 5 and 10
         setTimeout(init, ((Math.random() + 1) * 5) * 1000)
+    } else {
+        logger.finish();
     }
 }
 
