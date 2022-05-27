@@ -1,6 +1,9 @@
 import axios from 'axios';
 import Logger from '../_utils/logger.js';
 import Twitter from '../_utils/twitter.js';
+import { headersGenerator } from '../_utils/opensea.js';
+
+const generator = headersGenerator();
 
 //import { ethers } from "ethers";
 let i = 0;
@@ -9,15 +12,14 @@ let logger = new Logger('opensea-recent-collections')
 init()
 async function init() {
     console.log(`parsing ${i} number of items`);
-    let res = await axios.get(`https://api.opensea.io/api/v1/collections?offset=${i}&limit=300`, {
-        headers: {
-            "X-API-KEY": 'b9ab6f08fe5e408fb9c61f1fb4dabf60',
-            "Accept": "application/json"
-        }
-
-    })
-    let result = res.data.collections.filter(col => Object.keys(col.traits).length > 0)
-    await parseCollections(result)
+    const header = generator.next().value;
+    try {
+        let res = await axios.get(`https://api.opensea.io/api/v1/collections?offset=${i}&limit=300`, header);
+        let result = res.data.collections.filter(col => Object.keys(col.traits).length > 0)
+        await parseCollections(result)
+    } catch (err) {
+        console.log(err);
+    }
     // max by api
     if (i < 49500) {
         i += 300

@@ -4,8 +4,10 @@ import { OpenSeaStreamClient } from '@opensea/stream-js';
 import WebSocket, { WebSocketServer } from 'ws';
 import axios from 'axios';
 import { ethers } from "ethers";
+import { headersGenerator } from '../_utils/opensea';
 
 const queue = [];
+const generator = headersGenerator();
 
 const client = new OpenSeaStreamClient({
     token: 'b9ab6f08fe5e408fb9c61f1fb4dabf60',
@@ -56,24 +58,12 @@ async function processQueue() {
         let item = queue.pop();
         console.log(`working on ${item.collection} from ${queue.length}`);
         try {
-            let headers = [
-                {
-                    headers: {
-                        "X-API-KEY": "b9ab6f08fe5e408fb9c61f1fb4dabf60"
-                    }
-                },
-                {
-                    headers: {
-                        "X-API-KEY": "0f4cecba10aa45c49abdd314286d7c8a"
-                    }
-                },
-                {}
-            ]
-            let randomKey = headers[Math.floor(Math.random() * headers.length)];
+            let randomKey = generator.next().value;
+            console.log(`sent requestfor ${JSON.stringify(randomKey)}`);
             let res = await axios.get(`https://api.opensea.io/api/v1/collection/${item.collection}`, randomKey)
-            console.log(`sent request`);
             let base_price = ethers.BigNumber.from(item.eth_price)
             let floor_price = ethers.utils.parseEther(res.data.collection.stats.floor_price.toString())
+            console.log(res.data.collection.stats.floor_price.toString());
             //console.log(`${item.collection}: Listed ${item.permalink} for ${item.eth_price}, floor is ${res.data.collection.stats.floor_price}`);
             if (base_price.lte(floor_price)) {
                 item.floor_price = res.data.collection.stats.floor_price;
@@ -85,7 +75,7 @@ async function processQueue() {
             // TODO: circle if 2 in queue
             //queue.unshift(item);
             //console.error(`[ERROR]: pushing ${item.collection} back to queue`)
-            console.log(`[ERROR]: error in request ${err.data}`);
+            console.log(`[ERROR]: error in request ${err}`);
         }
     }
     //let randomRetry1and2s = (Math.random() * (max - min + 1) + min) * 1000
