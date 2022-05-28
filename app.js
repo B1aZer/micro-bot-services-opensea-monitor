@@ -4,7 +4,7 @@ import { OpenSeaStreamClient } from '@opensea/stream-js';
 import WebSocket, { WebSocketServer } from 'ws';
 import axios from 'axios';
 import { ethers } from "ethers";
-import { headersGenerator } from '../_utils/opensea';
+import { headersGenerator } from '../_utils/opensea.js';
 
 const queue = [];
 const generator = headersGenerator();
@@ -85,4 +85,3 @@ async function processQueue() {
     console.log(`retry in ${randomRetry1and4s}`);
     setTimeout(processQueue, randomRetry1and4s);
 }
-
