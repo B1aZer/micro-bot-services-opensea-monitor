@@ -16,7 +16,7 @@ process.on('uncaughtException', err => {
     console.log('There was an uncaught error', err);
     // send mail with defined transport object
     mailOptions.subject = '✖ OS Monitor Has Crashed ✖';
-    mailOptions.text =  JSON.stringify(err);
+    mailOptions.text = JSON.stringify(err);
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             return console.log(error);
@@ -91,16 +91,18 @@ async function processQueue() {
                 item.below = base_price.lt(floor_price) ? true : false;
                 wsClient && wsClient.send(JSON.stringify(item));
                 console.log(`${process.env.TWITTER_URL}`);
-                if (!item.below) {
+                if (item.below) {
                     axios.post(`${process.env.TWITTER_URL}`, {
                         username: process.env.TWITTER_USERNAME,
-                        text: `New floor listing on OpenSea.
-                        ${item.collection}
-                        ETH price: ${item.eth_price}
-                        Floor price: ${item.floor_price}
-                        USD price: ${item.usd_price}
-                        ${item.permalink}
-                        `
+                        text: `New OpenSea Floor Listing:
+
+${item.collection}
+ETH price: ${item.eth_price}
+Floor price: ${item.floor_price}
+USD price: ${item.usd_price}
+
+${item.permalink}
+`
                     })
                 }
             }
