@@ -6,6 +6,7 @@
   "type": "module",
   "dependencies": {
     "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
     "opensea-js": "^3.0.4",
     "ws": "^8.6.0"
   },
