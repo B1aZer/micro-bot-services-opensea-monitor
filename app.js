@@ -89,22 +89,30 @@ async function processQueue() {
                 item.floor_price = res.data.collection.stats.floor_price;
                 item.eth_price = ethers.utils.formatEther(item.eth_price)
                 item.below = base_price.lt(floor_price) ? true : false;
+                item.usd_price = (+item.eth_price * +item.usd_price).toFixed(2);
+                // log
+                console.log(`send to ws: ${item.collection}`);
+                // ws post
                 wsClient && wsClient.send(JSON.stringify(item));
-                console.log(`${process.env.TWITTER_URL}`);
+                // twitter repost
                 if (item.below) {
+                    console.log(`and twitter: ${item.collection}`);
+                    // do not await
                     axios.post(`${process.env.TWITTER_URL}`, {
                         username: process.env.TWITTER_USERNAME,
                         text: `New OpenSea Floor Listing:
 
 ${item.collection}
 
-ETH price: ${item.eth_price}
-Floor price: ${item.floor_price}
-USD price: ${item.usd_price}
+$ETH Listing Price: ${item.eth_price}
+Collection Floor Price: ${item.floor_price}
+$USD Price: ${item.usd_price}
+
+#opensea #NFT #NFTs #Solana #Ethereum #NFTProject #SolanaNFT
 
 ${item.permalink}
 `
-                    })
+                    })//.catch((err) => console.log(`[ERROR]: err`));
                 }
             }
         } catch (err) {
