@@ -97,6 +97,7 @@ async function processQueue() {
                         text: `New OpenSea Floor Listing:
 
 ${item.collection}
+
 ETH price: ${item.eth_price}
 Floor price: ${item.floor_price}
 USD price: ${item.usd_price}
