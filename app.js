@@ -7,6 +7,8 @@ import WebSocket, { WebSocketServer } from 'ws';
 import axios from 'axios';
 import { ethers } from "ethers";
 import { headersGenerator } from '../_utils/opensea.js';
+import pkg from '../_utils/index.js';
+const { pickRandom, removeAndReturnRandom } = pkg;
 
 // ERROR Processing
 import { transporter, mailOptions } from '../_utils/mail.js';
@@ -96,20 +98,21 @@ async function processQueue() {
                 wsClient && wsClient.send(JSON.stringify(item));
                 // twitter repost
                 if (item.below) {
-                    console.log(`and twitter: ${item.collection}`);
+                    const osHashes = ['#opensea', '#NFT', '#NFTs', '#Solana', '#Ethereum', '#NFTProject', '#SolanaNFT'];
+                    const lines = [`ETH Listing Price: ${item.eth_price}`, `Collection Floor Price: ${item.floor_price}`, `USD Price: ${item.usd_price}`];
                     // do not await
                     axios.post(`${process.env.TWITTER_URL}`, {
                         username: process.env.TWITTER_USERNAME,
                         text: `New OpenSea Floor Listing:
 
-${item.collection}
-
-$ETH Listing Price: ${item.eth_price}
-Collection Floor Price: ${item.floor_price}
-$USD Price: ${item.usd_price}
-
-#opensea #NFT #NFTs #Solana #Ethereum #NFTProject #SolanaNFT
-
+ ${item.collection}
+                    
+${removeAndReturnRandom(lines, Math.random())}
+${removeAndReturnRandom(lines, Math.random())}
+${removeAndReturnRandom(lines, Math.random())}
+                    
+${pickRandom(osHashes, Math.random())}
+                    
 ${item.permalink}
 `
                     })//.catch((err) => console.log(`[ERROR]: err`));
