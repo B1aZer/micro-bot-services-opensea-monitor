@@ -99,7 +99,7 @@ async function processQueue() {
                 // twitter repost
                 if (item.below) {
                     const osHashes = ['#opensea', '#NFTs', '#Solana', '#Ethereum', '#NFTProject', '#SolanaNFT'];
-                    const lines = [`ETH Listing Price: ${item.eth_price}`, `Collection Floor Price: ${item.floor_price}`, `USD Price: ${item.usd_price}`];
+                    const lines = [`ETH Listing Price: ${item.eth_price}`, `ETH Collection Floor Price: ${item.floor_price}`, `USD Price: ${item.usd_price}`];
                     // do not await
                     axios.post(`${process.env.TWITTER_URL}`, {
                         username: process.env.TWITTER_USERNAME,
