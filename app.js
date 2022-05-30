@@ -98,7 +98,7 @@ async function processQueue() {
                 wsClient && wsClient.send(JSON.stringify(item));
                 // twitter repost
                 if (item.below) {
-                    const osHashes = ['#opensea', '#NFTs', '#Solana', '#Ethereum', '#NFTProject', '#SolanaNFT'];
+                    const osHashes = ['#opensea', '#NFTs', '#NFT', '#Solana', '#Ethereum', '#NFTProject', '#SolanaNFT', ``];
                     const lines = [`ETH Listing Price: ${item.eth_price}`, `ETH Collection Floor Price: ${item.floor_price}`, `USD Price: ${item.usd_price}`];
                     // do not await
                     axios.post(`${process.env.TWITTER_URL}`, {
@@ -109,7 +109,7 @@ ${removeAndReturnRandom(lines, Math.random())}
 ${removeAndReturnRandom(lines, Math.random())}
 ${removeAndReturnRandom(lines, Math.random())}
                     
-${pickRandom(osHashes, Math.random())} #NFT
+${pickRandom(osHashes, Math.random())}
                     
 ${item.permalink}
 `
