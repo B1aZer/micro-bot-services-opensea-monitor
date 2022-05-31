@@ -38,13 +38,15 @@ async function parseCollections(colls) {
             slug: `https://opensea.io/collection/${element.slug}`,
             created_date: element.created_date,
             twitter_username: element.twitter_username,
-            twitter_followers: element.twitter_username ? (await Twitter.v1.user({ screen_name: element.twitter_username }))["followers_count"] : "",
+            twitter_followers: 0,
             contract: element.primary_asset_contracts.length ? element.primary_asset_contracts[0].address : ""
+        }
+        try {
+            obj.twitter_followers = element.twitter_username ? (await Twitter.v1.user({ screen_name: element.twitter_username }))["followers_count"] : "";
+        } catch (err) {
+            console.log(`[ERROR]: ${JSON.stringify(err)}`);
+            continue;
         }
         logger.write(obj);
     }
 }
-
-
-
-
