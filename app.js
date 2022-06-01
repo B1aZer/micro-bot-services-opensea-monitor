@@ -30,6 +30,8 @@ process.on('uncaughtException', err => {
 
 const queue = [];
 const generator = headersGenerator();
+const limitOfretries = 10;
+let retries = 0;
 
 const client = new OpenSeaStreamClient({
     token: 'b9ab6f08fe5e408fb9c61f1fb4dabf60',
@@ -101,7 +103,7 @@ async function processQueue() {
                     const osHashes = ['#opensea', '#NFTs', '#NFT', '#Solana', '#Ethereum', '#NFTProject', '#SolanaNFT', ``];
                     const lines = [`ETH Listing Price: ${item.eth_price}`, `ETH Collection Floor Price: ${item.floor_price}`, `USD Price: ${item.usd_price}`];
                     // do not await
-                    axios.post(`${process.env.TWITTER_URL}`, {
+                    axios.post(`${process.env.TWITTER_URL}/post`, {
                         username: process.env.TWITTER_USERNAME,
                         text: `${item.collection}
                     
@@ -121,6 +123,12 @@ ${item.permalink}
             //queue.unshift(item);
             //console.error(`[ERROR]: pushing ${item.collection} back to queue`)
             console.log(`[ERROR]: error in request ${err}`);
+        }
+    } else {
+        // queue empty
+        retries += 1;
+        if (retries > limitOfretries) {
+            throw new Error(`Queue was emtpy for more than ${limitOfretries} times.`)
         }
     }
     //let randomRetry1and2s = (Math.random() * (max - min + 1) + min) * 1000
