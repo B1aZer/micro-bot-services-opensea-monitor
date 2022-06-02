@@ -115,20 +115,23 @@ ${pickRandom(osHashes, Math.random())}
                     
 ${item.permalink}
 `
-                    })//.catch((err) => console.log(`[ERROR]: err`));
+                    }).catch((err) => console.log(`[ERROR]: error in twitter request ${err}`));
                 }
             }
         } catch (err) {
             // TODO: circle if 2 in queue
             //queue.unshift(item);
             //console.error(`[ERROR]: pushing ${item.collection} back to queue`)
-            console.log(`[ERROR]: error in request ${err}`);
+            console.log(`[ERROR]: error in request ${JSON.stringify(err)}`);
         }
     } else {
         // queue empty
         retries += 1;
         if (retries > limitOfretries) {
-            throw new Error(`Queue was emtpy for more than ${limitOfretries} times.`)
+            console.log(`[ERROR]: Queue was emtpy for more than ${limitOfretries} times.`);
+            client.disconnect();
+            client.connect();
+            //throw new Error(`Queue was emtpy for more than ${limitOfretries} times.`)
         }
     }
     //let randomRetry1and2s = (Math.random() * (max - min + 1) + min) * 1000
