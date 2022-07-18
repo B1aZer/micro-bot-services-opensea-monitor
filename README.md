@@ -1,1 +1,1 @@
-OpenSea monitor service. Track NFT price changes.
+OpenSea monitor service. Tracks NFT price changes.
